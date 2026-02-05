@@ -879,16 +879,20 @@
         }
 
         async request(url, options = {}) {
-          const res = await fetch(url, options);
+          try {
+            const res = await fetch(url, options);
 
-          if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(txt);
+            if (!res.ok) {
+              const txt = await res.text();
+              throw new Error(txt || `HTTP ${res.status}`);
+            }
+
+            return await res.json();
+          } catch (error) {
+            console.error("Database request error:", error);
+            throw error;
           }
-
-          return res.json();
         }
-
         getQuestions() {
           return this.request(`${this.apiUrl}/questions`);
         }
@@ -1054,35 +1058,61 @@
       // ===========================================
       // QUESTIONS FUNCTIONS
       // ===========================================
-      let isSubmittingMessage = false;
+      let isSubmittingQuestion = false;
 
-      async function submitMessage() {
-        if (isSubmittingMessage) return;
-        isSubmittingMessage = true;
+      async function submitQuestion() {
+        // Prevent double-submission
+        if (isSubmittingQuestion) {
+          console.log("Already submitting question...");
+          return;
+        }
 
-        const input = document.getElementById("messageInput");
-        const recipient = document.getElementById("messageRecipient");
+        isSubmittingQuestion = true;
+
+        const input = document.getElementById("questionInput");
+        const age = document.getElementById("questionAge");
+        const gender = document.getElementById("questionGender");
 
         const content = input.value.trim();
+        const ageValue = age.value;
+        const genderValue = gender.value;
 
+        console.log("Submitting question:", { content, ageValue, genderValue });
+
+        // Validation
         if (!content) {
-          showNotification("Please enter a message ❌", false);
-          isSubmittingMessage = false;
+          showNotification("Please enter a question ❌", false);
+          isSubmittingQuestion = false;
+          return;
+        }
+
+        if (!ageValue) {
+          showNotification("Please select your age range ❌", false);
+          isSubmittingQuestion = false;
+          return;
+        }
+
+        if (!genderValue) {
+          showNotification("Please select your gender ❌", false);
+          isSubmittingQuestion = false;
           return;
         }
 
         try {
-          await db.addMessage(content, recipient.value.trim());
+          const result = await db.addQuestion(content, ageValue, genderValue);
+          console.log("Question saved:", result);
 
+          // Clear form
           input.value = "";
-          recipient.value = "";
+          age.value = "";
+          gender.value = "";
 
-          showNotification("Message posted successfully 💕");
+          showNotification("Question posted successfully! 🎉");
         } catch (error) {
-          console.error(error);
-          showNotification("Failed to post message ❌", false);
+          console.error("Error posting question:", error);
+          showNotification("Failed to post question ❌", false);
         } finally {
-          isSubmittingMessage = false;
+          isSubmittingQuestion = false;
         }
       }
 
@@ -1090,25 +1120,46 @@
       // MESSAGES FUNCTIONS
       // ===========================================
 
+      let isSubmittingMessage = false;
+
       async function submitMessage() {
+        // Prevent double-submission
+        if (isSubmittingMessage) {
+          console.log("Already submitting message...");
+          return;
+        }
+
+        isSubmittingMessage = true;
+
         const input = document.getElementById("messageInput");
         const recipient = document.getElementById("messageRecipient");
+
         const content = input.value.trim();
         const recipientValue = recipient.value.trim();
 
+        console.log("Submitting message:", { content, recipientValue });
+
+        // Validation
         if (!content) {
-          alert("Please enter a message!");
+          showNotification("Please enter a message ❌", false);
+          isSubmittingMessage = false;
           return;
         }
 
         try {
-          await db.addMessage(content, recipientValue);
+          const result = await db.addMessage(content, recipientValue);
+          console.log("Message saved:", result);
+
+          // Clear form
           input.value = "";
           recipient.value = "";
-          alert("Message posted successfully! 💕");
+
+          showNotification("Message posted successfully! 💕");
         } catch (error) {
           console.error("Error posting message:", error);
-          alert("Failed to post message. Please try again.");
+          showNotification("Failed to post message ❌", false);
+        } finally {
+          isSubmittingMessage = false;
         }
       }
 
