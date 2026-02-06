@@ -693,6 +693,48 @@
           content: "...";
         }
       }
+
+      /* Watermark/Footer */
+      .watermark {
+        text-align: center;
+        padding: 2rem 1rem;
+        margin-top: 3rem;
+        color: var(--coffee);
+        opacity: 0.6;
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(139, 46, 63, 0.1);
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(5px);
+      }
+
+      .watermark p {
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .watermark .heart {
+        color: var(--rose-deep);
+        display: inline-block;
+        animation: heartbeat 1.5s ease-in-out infinite;
+        margin: 0 0.25rem;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .watermark {
+          font-size: 0.8rem;
+          padding: 1.5rem 1rem;
+        }
+      }
     </style>
   </head>
   <body>
@@ -908,7 +950,10 @@
         </div>
       </div>
     </div>
-
+    <!-- Watermark/Footer -->
+    <footer class="watermark">
+      <p>Made with <span class="heart">♥</span> by Nadia Kafui @2026</p>
+    </footer>
     <script>
       // ===========================================
       // DATABASE CLASS
