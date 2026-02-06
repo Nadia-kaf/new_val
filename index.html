@@ -107,6 +107,8 @@
         display: flex;
         gap: 1.5rem;
         align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
       }
 
       .admin-nav a {
@@ -115,13 +117,18 @@
         font-weight: 600;
         padding: 0.5rem 1rem;
         transition: all 0.3s ease;
+        white-space: nowrap;
+        font-size: 0.9rem;
       }
 
       .admin-nav a:hover {
         color: var(--cream);
         transform: scale(1.05);
       }
-
+      .admin-nav .btn-secondary {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+      }
       .btn {
         padding: 0.75rem 1.5rem;
         border: none;
@@ -621,11 +628,45 @@
           flex-direction: column;
         }
 
+        .navbar {
+          padding: 10px 15px;
+        }
+
+        .logo {
+          font-size: 1.5rem;
+        }
+
         .admin-nav {
-          gap: 1rem;
+          gap: 0.5rem;
+          width: 100%;
+          justify-content: flex-end;
+        }
+
+        .admin-nav a {
+          font-size: 0.8rem;
+          padding: 0.4rem 0.6rem;
+        }
+
+        .admin-nav .btn-secondary {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.8rem;
         }
       }
 
+      /* Very small screens (phones in portrait) */
+      @media (max-width: 400px) {
+        .admin-nav {
+          flex-direction: column;
+          width: auto;
+          gap: 0.5rem;
+        }
+
+        .admin-nav a,
+        .admin-nav .btn-secondary {
+          width: 100%;
+          text-align: center;
+        }
+      }
       /* Loading Animation */
       .loading {
         text-align: center;
